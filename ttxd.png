@@ -1,0 +1,1510 @@
+-- WIG 网络验证
+fuhao= '"' local function json2true(str,from,to) return true, from+3 end local function json2false(str,from,to) return false, from+4 end local function json2null(str, from, to) return nil, from+3 end local function json2nan(str, from, to) return nul, from+2 end local numberchars = {['-'] = true,['+'] = true,['.'] = true,['0'] = true,['1'] = true,['2'] = true,['3'] = true,['4'] = true,['5'] = true,['6'] = true,['7'] = true,['8'] = true,['9'] = true} local function json2number(str,from,to) local i = from+1 while(i<=to) do local char = string.sub(str, i, i) if not numberchars[char] then break end i = i + 1 end local num = tonumber(string.sub(str, from, i-1)) if not num then error(_format('json格式错误，不正确的数字, 错误位置:{from}', from)) end return num, i-1 end local function json2string(str,from,to) local ignor = false for i = from+1, to do local char = string.sub(str, i, i) if not ignor then if char ==  fuhao  then return string.sub(str, from+1, i-1), i elseif char == '\\' then ignor = true end else ignor = false end end error(_format('json格式错误，字符串没有找到结尾, 错误位置:{from}', from)) end local function json2array(str,from,to)    local result = {}    from = from or 1    local pos = from+1    local to = to or string.len(str)    while(pos<=to) do        local char = string.sub(str, pos, pos)        if char ==  fuhao  then            result[#result+1], pos = json2string(str,pos,to)        elseif char == '[' then            result[#result+1], pos = json2array(str,pos,to)        elseif char == '{' then            result[#result+1], pos = json2table(str,pos,to)        elseif char == ']' then            return result, pos        elseif (char=='f' or char=='F') then            result[#result+1], pos = json2false(str,pos,to)        elseif (char=='t' or char=='T') then            result[#result+1], pos = json2true(str,pos,to)        elseif (char=='n') then            result[#result+1], pos = json2null(str,pos,to)        elseif (char=='N') then            result[#result+1], pos = json2nan(str,pos,to)        elseif numberchars[char] then            result[#result+1], pos = json2number(str,pos,to)        end        pos = pos + 1    end    error(_format('json格式错误，表没有找到结尾, 错误位置:{from}', from)) end function _G.json2table(str,from,to)    local result = {}    from = from or 1    local pos = from+1    local to = to or string.len(str)    local key    while(pos<=to) do        local char = string.sub(str, pos, pos)        if char ==  fuhao  then            if not key then                key, pos = json2string(str,pos,to)            else                result[key], pos = json2string(str,pos,to)                key = nil            end        elseif char == '[' then            if not key then                key, pos = json2array(str,pos,to)            else                result[key], pos = json2array(str,pos,to)                key = nil            end        elseif char == '{' then            if not key then                key, pos = json2table(str,pos,to)            else                result[key], pos = json2table(str,pos,to)                key = nil            end        elseif char == '}' then            return result, pos        elseif (char=='f' or char=='F') then            result[key], pos = json2false(str,pos,to)            key = nil        elseif (char=='t' or char=='T') then            result[key], pos = json2true(str,pos,to)            key = nil        elseif (char=='n') then            result[key], pos = json2null(str,pos,to)            key = nil        elseif (char=='N') then            result[key], pos = json2nan(str,pos,to)            key = nil        elseif numberchars[char] then            if not key then                key, pos = json2number(str,pos,to)            else                result[key], pos = json2number(str,pos,to)                key = nil            end        end        pos = pos + 1    end    error(_format('格式错误，表没有找到结尾, 错误位置:{from}', from)) end local jsonfuncs={[ fuhao ]=json2string,['[']=json2array,['{']=json2table,['f']=json2false,['F']=json2false,['t']=json2true,['T']=json2true} function alqd8e26HCPmhgqs(str) if str==nil then gg.alert('错误json') else local char = string.sub(str, 1, 1) local func=jsonfuncs[char] if func then return func(str, 1, string.len(str)) end if numberchars[char] then return json2number(str, 1, string.len(str)) end end end
+function md5(code) local code = tostring(code) local HexTable = {"0","1","2","3","4","5","6","7","8","9","A","B","C","D","E","F"} local A = 0x67452301 local B = 0xefcdab89 local C = 0x98badcfe local D = 0x10325476 local S11 = 7 local S12 = 12 local S13 = 17 local S14 = 22 local S21 = 5 local S22 = 9 local S23 = 14 local S24 = 20 local S31 = 4 local S32 = 11 local S33 = 16 local S34 = 23 local S41 = 6 local S42 = 10 local S43 = 15 local S44 = 21 local function F(x,y,z) return (x & y) | ((~x) & z) end local function G(x,y,z) return (x & z) | (y & (~z)) end local function H(x,y,z) return x ~ y ~ z end local function I(x,y,z) return y ~ (x | (~z)) end local function FF(a,b,c,d,x,s,ac) a = a + F(b,c,d) + x + ac a = (((a & 0xffffffff) << s) | ((a & 0xffffffff) >> 32 - s)) + b return a & 0xffffffff end local function GG(a,b,c,d,x,s,ac) a = a + G(b,c,d) + x + ac a = (((a & 0xffffffff) << s) | ((a & 0xffffffff) >> 32 - s)) + b return a & 0xffffffff end local function HH(a,b,c,d,x,s,ac) a = a + H(b,c,d) + x + ac a = (((a & 0xffffffff) << s) | ((a & 0xffffffff) >> 32 - s)) + b return a & 0xffffffff end local function II(a,b,c,d,x,s,ac) a = a + I(b,c,d) + x + ac a = (((a & 0xffffffff) << s) | ((a & 0xffffffff) >> 32 - s)) + b return a & 0xffffffff end local function MD5StringFill(s) local len = s:len() local mod512 = len * 8 % 512 local fillSize = (448 - mod512) // 8 if mod512 > 448 then fillSize = (960 - mod512) // 8 end local rTab = {} local byteIndex = 1 for i = 1,len do local index = (i - 1) // 4 + 1 rTab[index] = rTab[index] or 0 rTab[index] = rTab[index] | (s:byte(i) << (byteIndex - 1) * 8) byteIndex = byteIndex + 1 if byteIndex == 5 then byteIndex = 1 end end local b0x80 = false local tLen = #rTab if byteIndex ~= 1 then rTab[tLen] = rTab[tLen] | 0x80 << (byteIndex - 1) * 8 b0x80 = true end for i = 1,fillSize // 4 do if not b0x80 and i == 1 then rTab[tLen + i] = 0x80 else rTab[tLen + i] = 0x0 end end local bitLen = math.floor(len * 8) tLen = #rTab rTab[tLen + 1] = bitLen & 0xffffffff rTab[tLen + 2] = bitLen >> 32 return rTab end function getmd5(s) local fillTab = MD5StringFill(s) local result = {A,B,C,D} for i = 1,#fillTab // 16 do local a = result[1] local b = result[2] local c = result[3] local d = result[4] local offset = (i - 1) * 16 + 1 a = FF(a, b, c, d, fillTab[offset + 0], S11, 0xd76aa478) d = FF(d, a, b, c, fillTab[offset + 1], S12, 0xe8c7b756) c = FF(c, d, a, b, fillTab[offset + 2], S13, 0x242070db) b = FF(b, c, d, a, fillTab[offset + 3], S14, 0xc1bdceee) a = FF(a, b, c, d, fillTab[offset + 4], S11, 0xf57c0faf) d = FF(d, a, b, c, fillTab[offset + 5], S12, 0x4787c62a) c = FF(c, d, a, b, fillTab[offset + 6], S13, 0xa8304613) b = FF(b, c, d, a, fillTab[offset + 7], S14, 0xfd469501) a = FF(a, b, c, d, fillTab[offset + 8], S11, 0x698098d8) d = FF(d, a, b, c, fillTab[offset + 9], S12, 0x8b44f7af) c = FF(c, d, a, b, fillTab[offset + 10], S13, 0xffff5bb1) b = FF(b, c, d, a, fillTab[offset + 11], S14, 0x895cd7be) a = FF(a, b, c, d, fillTab[offset + 12], S11, 0x6b901122) d = FF(d, a, b, c, fillTab[offset + 13], S12, 0xfd987193) c = FF(c, d, a, b, fillTab[offset + 14], S13, 0xa679438e) b = FF(b, c, d, a, fillTab[offset + 15], S14, 0x49b40821) a = GG(a, b, c, d, fillTab[offset + 1], S21, 0xf61e2562) d = GG(d, a, b, c, fillTab[offset + 6], S22, 0xc040b340) c = GG(c, d, a, b, fillTab[offset + 11], S23, 0x265e5a51) b = GG(b, c, d, a, fillTab[offset + 0], S24, 0xe9b6c7aa) a = GG(a, b, c, d, fillTab[offset + 5], S21, 0xd62f105d) d = GG(d, a, b, c, fillTab[offset + 10], S22, 0x2441453) c = GG(c, d, a, b, fillTab[offset + 15], S23, 0xd8a1e681) b = GG(b, c, d, a, fillTab[offset + 4], S24, 0xe7d3fbc8) a = GG(a, b, c, d, fillTab[offset + 9], S21, 0x21e1cde6) d = GG(d, a, b, c, fillTab[offset + 14], S22, 0xc33707d6) c = GG(c, d, a, b, fillTab[offset + 3], S23, 0xf4d50d87) b = GG(b, c, d, a, fillTab[offset + 8], S24, 0x455a14ed) a = GG(a, b, c, d, fillTab[offset + 13], S21, 0xa9e3e905) d = GG(d, a, b, c, fillTab[offset + 2], S22, 0xfcefa3f8) c = GG(c, d, a, b, fillTab[offset + 7], S23, 0x676f02d9) b = GG(b, c, d, a, fillTab[offset + 12], S24, 0x8d2a4c8a) a = HH(a, b, c, d, fillTab[offset + 5], S31, 0xfffa3942) d = HH(d, a, b, c, fillTab[offset + 8], S32, 0x8771f681) c = HH(c, d, a, b, fillTab[offset + 11], S33, 0x6d9d6122) b = HH(b, c, d, a, fillTab[offset + 14], S34, 0xfde5380c) a = HH(a, b, c, d, fillTab[offset + 1], S31, 0xa4beea44) d = HH(d, a, b, c, fillTab[offset + 4], S32, 0x4bdecfa9) c = HH(c, d, a, b, fillTab[offset + 7], S33, 0xf6bb4b60) b = HH(b, c, d, a, fillTab[offset + 10], S34, 0xbebfbc70) a = HH(a, b, c, d, fillTab[offset + 13], S31, 0x289b7ec6) d = HH(d, a, b, c, fillTab[offset + 0], S32, 0xeaa127fa) c = HH(c, d, a, b, fillTab[offset + 3], S33, 0xd4ef3085) b = HH(b, c, d, a, fillTab[offset + 6], S34, 0x4881d05) a = HH(a, b, c, d, fillTab[offset + 9], S31, 0xd9d4d039) d = HH(d, a, b, c, fillTab[offset + 12], S32, 0xe6db99e5) c = HH(c, d, a, b, fillTab[offset + 15], S33, 0x1fa27cf8) b = HH(b, c, d, a, fillTab[offset + 2], S34, 0xc4ac5665) a = II(a, b, c, d, fillTab[offset + 0], S41, 0xf4292244) d = II(d, a, b, c, fillTab[offset + 7], S42, 0x432aff97) c = II(c, d, a, b, fillTab[offset + 14], S43, 0xab9423a7) b = II(b, c, d, a, fillTab[offset + 5], S44, 0xfc93a039) a = II(a, b, c, d, fillTab[offset + 12], S41, 0x655b59c3) d = II(d, a, b, c, fillTab[offset + 3], S42, 0x8f0ccc92) c = II(c, d, a, b, fillTab[offset + 10], S43, 0xffeff47d) b = II(b, c, d, a, fillTab[offset + 1], S44, 0x85845dd1) a = II(a, b, c, d, fillTab[offset + 8], S41, 0x6fa87e4f) d = II(d, a, b, c, fillTab[offset + 15], S42, 0xfe2ce6e0) c = II(c, d, a, b, fillTab[offset + 6], S43, 0xa3014314) b = II(b, c, d, a, fillTab[offset + 13], S44, 0x4e0811a1) a = II(a, b, c, d, fillTab[offset + 4], S41, 0xf7537e82) d = II(d, a, b, c, fillTab[offset + 11], S42, 0xbd3af235) c = II(c, d, a, b, fillTab[offset + 2], S43, 0x2ad7d2bb) b = II(b, c, d, a, fillTab[offset + 9], S44, 0xeb86d391) result[1] = result[1] + a result[2] = result[2] + b result[3] = result[3] + c result[4] = result[4] + d result[1] = result[1] & 0xffffffff result[2] = result[2] & 0xffffffff result[3] = result[3] & 0xffffffff result[4] = result[4] & 0xffffffff end local retStr = '' for i = 1,4 do for _ = 1,4 do local temp = result[i] & 0x0F local str = HexTable[temp + 1] result[i] = result[i] >> 4 temp = result[i] & 0x0F retStr = retStr .. HexTable[temp + 1] .. str result[i] = result[i] >> 4 end end return string.lower(retStr) end return getmd5(code) end
+ZZRc4 = {}
+ZZMathBit = {}
+function ZZMathBit.__xorBit(left, right) return (left + right) == 1 and 1 or 0 end function ZZMathBit.__base(left, right, op) if left < right then left, right = right, left end local res = 0 local shift = 1 while left ~= 0 do local ra = left % 2 local rb = right % 2 res = shift * op(ra,rb) + res shift = shift * 2 left = math.modf( left / 2) right = math.modf( right / 2) end return res end function ZZMathBit.xorOp(left, right) return ZZMathBit.__base(left, right, ZZMathBit.__xorBit) end function a5j8rYacKSHtbVSu(text,key,kasi) if kasi==false then str = text str=str:gsub("[%s%p]",""):upper() local index=1 local ret="" for index=1,str:len(),2 do ret=ret..string.char(tonumber(str:sub(index,index+1),16)) end text=ret end local function KSA(key) local keyLen = string.len(key) local schedule = {} local keyByte = {} for i = 0, 255 do schedule[i] = i end for i = 1, keyLen do keyByte[i - 1] = string.byte(key, i, i) end local j = 0 for i = 0, 255 do j = (j + schedule[i] + keyByte[ i % keyLen]) % 256 schedule[i], schedule[j] = schedule[j], schedule[i] end return schedule end local function PRGA(schedule, textLen) local i = 0 local j = 0 local k = {} for n = 1, textLen do i = (i + 1) % 256 j = (j + schedule[i]) % 256 schedule[i], schedule[j] = schedule[j], schedule[i] k[n] = schedule[(schedule[i] + schedule[j]) % 256] end return k end local function output(schedule, text) local len = string.len(text) local c = nil local res = {} for i = 1, len do c = string.byte(text, i,i) res[i] = string.char(ZZMathBit.xorOp(schedule[i], c)) end j = "" for i,v in pairs(res) do j = j..v end return j end local textLen = string.len(text) local schedule = KSA(key) local k = PRGA(schedule, textLen) str=output(k, text) if kasi==true then str = tostring(str) local index=1 local ret="" for index=1,str:len() do ret=ret..string.format("%02X",str:sub(index):byte()) end return string.lower(ret) else return str end end
+function initGG() if getrlyunyz then local URL = luajava.bindClass("java.net.URL") local HttpURLConnection = luajava.bindClass("java.net.HttpURLConnection") local OutputStream = luajava.bindClass("java.io.OutputStream") local InputStreamReader = luajava.bindClass("java.io.InputStreamReader") local BufferedReader = luajava.bindClass("java.io.BufferedReader") local StringBuilder = luajava.bindClass("java.lang.StringBuilder") function performHttpPost(url, postData) local result = "" local connection = nil local success, e = pcall(function() local urlObject = URL(url) connection = urlObject:openConnection() connection:setRequestMethod("POST") connection:setDoOutput(true) local outputStream = connection:getOutputStream() local data = postData:getBytes() outputStream:write(data) outputStream:close() local inputStream = connection:getInputStream() local reader = BufferedReader(InputStreamReader(inputStream)) local line = nil local response = StringBuilder() while (true) do line = reader:readLine() if line == nil then break end response:append(line) end reader:close() connection:disconnect() result = response:toString() end) if not success then return e:toString() end return result end function performHttpGet(url) local result = "" local connection = nil local success, e = pcall(function() local urlObject = URL(url) connection = urlObject:openConnection() connection:setRequestMethod("GET") local responseCode = connection:getResponseCode() if responseCode == 200 then local inputStream = connection:getInputStream() local reader = BufferedReader(InputStreamReader(inputStream)) local line = nil local response = StringBuilder() while (true) do line = reader:readLine() if line == nil then break end response:append(line) end reader:close() inputStream:close() result = response:toString()   else result = "HTTP Response Code: " .. responseCode end connection:disconnect() end) if not success then return e:toString() end return result end end end initGG()
+
+function ultra(get,post) if not getrlyunyz then local c=gg.makeRequest(get,nil,post) local d = c.content local f = get.."\n网络异常" if d ~= nil then f=c.code end if d == nil or c.code ~= 200 then gg.alert("请求链接："..get.."\n网络错误了，请检查你的网络："..f) os.exit() end return d else if post then return performHttpPost(get,post) else return performHttpGet(get) end end end
+
+local xxxxxxx = "http://www.wigwy.xyz/api"
+local xxxxxx = "http://wigyyds.com/api"
+local xxxxxxx_23607 = '23607'
+function xxxxxxx_Kami(km,bool)
+    local time = os.time()
+    local taobao = gg.makeRequest("http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp").content
+    if taobao ~= nil then
+        taobao = alqd8e26HCPmhgqs(taobao)
+        if taobao ~= nil then
+            time = taobao.data.t:sub(1,10)
+        end
+    end
+    if bool then
+      xxxxxxx = xxxxxx
+    end
+    return xxxxxxx .. "/login/" .. time .. "/" .. xxxxxxx_23607 .. "/" .. km
+end
+function xxxxxxx_Notice()
+    return ultra(xxxxxxx .. "/announcement/" .. os.time() .. "/" .. xxxxxxx_23607)
+end
+function xxxxxxx_Number_Of()
+    return ultra(xxxxxxx .. "/numberOf/" .. os.time() .. "/" .. xxxxxxx_23607)
+end
+local notice = xxxxxxx_Notice()
+local number_of = xxxxxxx_Number_Of()
+local xxxxxxx_jieba = xxxxxxx .. "/unbundling/" .. xxxxxxx_23607 .. "/"
+local amJhPWP6vJ9gZZgX = "VEs6ciEMgRjRbnC"
+local xxxbanb = '1.0'
+AMI_YDO = "/sdcard/Android/"
+xxxxxxxx = 999
+function atyuxEN0KvvVgzil()
+    imei_path = AMI_YDO .. '/wig' .. xxxxxxx_23607 .. '.imei'
+    imei = io.open(imei_path, 'r')
+    if not imei or imei:read("*a") == "" then
+    imei = md5((os.time() * 1000 + 611 - 99999)..math.random("1","999999999"))..os.time()
+    io.open(imei_path, 'w+'):write(imei) 
+    else
+    imei = io.open(imei_path, 'r'):read("*a") 
+    end
+    imei = imei
+    km_key = io.open(AMI_YDO .. '/km' .. xxxxxxx_23607, 'r')
+    if km_key == nil then
+    else
+        km_key = io.open(AMI_YDO .. '/km' .. xxxxxxx_23607, 'r'):read("*a")
+    end 
+    e = io.open(AMI_YDO .. '/e'.. xxxxxxx_23607 ..'.log', 'r')
+    if e == nil or e:read("*a") == "" then
+        e = "1"
+        io.open(AMI_YDO .. '/e'.. xxxxxxx_23607 ..'.log', 'w+'):write(e) 
+    else
+        e = io.open(AMI_YDO .. '/e'.. xxxxxxx_23607 ..'.log', 'r'):read("*a") 
+    end 
+    if e == "1" then
+        e = false
+    else
+        e = true
+    end
+    function KM_G(km,imei) 
+        HUT = ultra(xxxxxxx_jieba .. km, "imei="..imei)
+        return HUT
+    end
+    function KM_LL(km,bool) 
+        content = ultra(xxxxxxx_Kami(km,bool), "imei=" .. imei)
+        content = a5j8rYacKSHtbVSu(content, amJhPWP6vJ9gZZgX, false)
+        while string.find(content,"code") == nil do
+          gg.alert("脚本已更新!","")
+          os.exit()
+        end
+        a9xnQZAijntZNs6i = alqd8e26HCPmhgqs(content)
+        adJgi1WpSmeTXBA2 = a9xnQZAijntZNs6i.code 
+        msg = a9xnQZAijntZNs6i.msg 
+        check = a9xnQZAijntZNs6i.check 
+        api_time = a9xnQZAijntZNs6i.api_time 
+        a9mhTAqKfxiEVpFP = a9xnQZAijntZNs6i.vip 
+        afz0Is9gfvXyYxVO = a9xnQZAijntZNs6i.new_code2 
+        user_vip = a9xnQZAijntZNs6i.user_vip
+        -- 永久卡 | 年卡 | 季卡 | 月卡 | 周卡 | 天卡 | 小时卡 | 分钟卡
+        card_type = a9xnQZAijntZNs6i.card_type
+        -- 假如你想限制卡密类型来使用卡密可以这样使用
+        --[[
+            -- 使用例子 仅供参考
+            if card_type == "永久卡" then
+                -- 代码
+            else
+                gg.alert("你没有权限使用该功能")
+            end
+            ---------------------
+            if card_type == "永久卡" or card_type == "年卡" then
+                -- 代码
+            else
+                gg.alert("你没有权限使用该功能")
+            end
+           
+        ]]
+        if check == nil then
+            gg.alert(msg)
+            atyuxEN0KvvVgzil()
+        end
+        local time = os.time()
+        local taobao = gg.makeRequest("http://api.m.taobao.com/rest/api3.do?api=mtop.common.getTimestamp").content
+        if taobao ~= nil then
+            taobao = alqd8e26HCPmhgqs(taobao)
+            if taobao ~= nil then
+                time = taobao.data.t:sub(1,10)
+            end
+        end
+        while time < api_time or ((tonumber(os.time()) - tonumber(api_time)) > 30) or ((tonumber(os.time()) - tonumber(api_time)) < -30) do
+            print("脚本：数据过期(4.0)\n解决方法:调整手机时间为自动\n北京时间24小时制"..tonumber(os.time()) - tonumber(api_time))
+            os.exit()
+        end
+        if adJgi1WpSmeTXBA2 ~= "20000" then
+            gg.alert(msg) 
+            if adJgi1WpSmeTXBA2 ~= "20000" then
+                os.remove(AMI_YDO .. '/km' .. xxxxxxx_23607)
+                io.open(AMI_YDO .. '/e'.. xxxxxxx_23607 ..'.log', 'w+'):write("1") 
+            end
+            atyuxEN0KvvVgzil()
+        else
+        checktrue = a5j8rYacKSHtbVSu(a9xnQZAijntZNs6i.checktrue, amJhPWP6vJ9gZZgX, false)
+        while checktrue ~= (imei .. a9xnQZAijntZNs6i.user_time .. api_time..xxxxxxx_23607..adJgi1WpSmeTXBA2) do
+            print("脚本：检测到你有非法操作")
+            os.exit()
+        end
+            vip_text = os.date(
+                    "%Y" .. "年" .. "%m" .. "月" .. "%d" .. "日  %H" .. "时" .. "%M" .. "分" .. "%S" .. "秒", a9mhTAqKfxiEVpFP)
+        if os.date("%Y", a9mhTAqKfxiEVpFP) == "9999" then
+            vip_text = "永久卡"
+        end
+            if tostring(afz0Is9gfvXyYxVO) ~= "6840964969db52d5a001e49db14d8c2b" then
+                gg.alert("检测到您有非法操作2")
+                atyuxEN0KvvVgzil()
+            end
+            local Mu_wig = gg.alert([[
+
+到期时间: ]] ..
+                         vip_text ..
+                         [[
+
+
+使用卡密: ]] .. a9xnQZAijntZNs6i.key, "确定","更换卡密")
+            if Mu_wig==2 then
+                os.remove(AMI_YDO .. '/e'.. xxxxxxx_23607 ..'.log')
+                gg.setVisible(true)
+                atyuxEN0KvvVgzil()
+            else
+                io.open(AMI_YDO .. '/km' .. xxxxxxx_23607, 'w+'):write(a9xnQZAijntZNs6i.key) 
+                gg.setVisible(true)
+
+
+                
+function Main()
+menu = gg.choice({
+'💖💖💖副本专区💖💖💖',
+'💘💘💘竞技专区💘💘💘',
+'💗💗💗自定义区💗💗💗',
+'💞💞💞闪退专区💞💞💞',
+'💎💎💎退出脚本💎💎💎'},
+2018,'💞💞💞作者:Victoria🌸QQ2634833203🌸QQ群645749766🌸通用全安卓🌸四个专区上方有详细说明💞💞💞')
+if menu == 1 then A() end
+if menu == 2 then B() end
+if menu == 3 then C() end
+if menu == 4 then D() end
+if menu == 5 then Exit() end
+XGCK=-1
+end
+
+function A()
+
+menu1 = gg.multiChoice({
+  '💞💞一键开启辅助💞💞',
+  '💟💟关闭一键辅助💟💟',
+  '💞💞主线专用开启💞💞',
+  '💟💟炫斗之王开启💟💟',
+ '💞💞💞定怪开启💞💞💞',
+ '💟💟💟定怪关闭💟💟💟',
+ '💞💞💞秒杀开启💞💞💞',
+ '💟💟💟秒杀关闭💟💟💟',
+ '💞💞💞无敌开启💞💞💞',
+ '💟💟💟无敌关闭💟💟💟',
+ '💞💞💞无限秘法💞💞💞',
+ '💟💟💟关闭秘法💟💟💟',
+ '💞💞💞全局加速💞💞💞',
+ '💟💟💟关闭加速💟💟💟',
+'💎💎💎返回上一页💎💎💎'},
+nil,'💞💞💞作者:Victoria🌸QQ2634833203🌸副本专区闪退的话换闪退专区🌸副本《一键开启辅助》包含全功能,除了定怪🌸主线与远征开主线专用💞💞💞')
+if menu1 == nil then else
+if menu1[1] == true then a1() end
+if menu1[2] == true then a2() end
+if menu1[3] == true then a3() end
+if menu1[4] == true then a4() end
+if menu1[5] == true then a5() end
+if menu1[6] == true then a6() end
+if menu1[7] == true then a7() end
+if menu1[8] == true then a8() end
+if menu1[9] == true then a9() end
+if menu1[10] == true then a10() end
+if menu1[11] == true then a11() end
+if menu1[12] == true then a12() end
+if menu1[13] == true then a13() end
+if menu1[14] == true then a14() end
+if menu1[15] == true then HOME() end
+end
+GLWW=-1
+end
+
+function B()
+menu1 = gg.multiChoice({
+ '🌴🌴🌴低闪微调🌴🌴🌴',
+ '🍒🍒🍒中闪微调🍒🍒🍒',
+ '🌴🌴🌴不闪微调🌴🌴🌴',
+ '🍒🍒🍒关闭微调🍒🍒🍒',
+ '🌴🌴🌴防御恢复🌴🌴🌴',
+ '🍒🍒🍒竞技定位🍒🍒🍒',
+ '🌴🌴🌴关闭定位🌴🌴🌴',
+ '🍒🍒🍒无视技能🍒🍒🍒',
+ '🌴🌴🌴关闭无视🌴🌴🌴',
+ '🍒🍒🍒竞技无敌🍒🍒🍒',
+ '🌴🌴🌴关闭无敌🌴🌴🌴',
+ '🍒🍒🍒以挂治挂🍒🍒🍒',
+ '🌴🌴🌴关闭治挂🌴🌴🌴',
+'💎💎💎返回上一页💎💎💎'},
+nil,'💞💞💞作者:Victoria🌸QQ2634833203🌸只保证微调不封🌸微调包含《闪避+竞技定位+增强秘法+减伤》🌸以挂治挂是无限翅膀,不建议用,需要宠物阵法里有星术师或者教皇才有回血效果💞💞💞')
+if menu1 == nil then else
+if menu1[1] == true then b1() end
+if menu1[2] == true then b2() end
+if menu1[3] == true then b3() end
+if menu1[4] == true then b4() end
+if menu1[5] == true then b5() end
+if menu1[6] == true then b6() end
+if menu1[7] == true then b7() end
+if menu1[8] == true then b8() end
+if menu1[9] == true then b9() end
+if menu1[10] == true then b10() end
+if menu1[11] == true then b11() end
+if menu1[12] == true then b12() end
+if menu1[13] == true then b13() end
+if menu1[14] == true then HOME() end
+end
+GLWW=-1
+end
+
+function C()
+menu1 = gg.choice({
+ '🌺🌺🌺加速调控🌺🌺🌺',
+ '🌸🌸🌸防御调控🌸🌸🌸',
+ '🌺🌺🌺秘法调控🌺🌺🌺',
+ '🌸🌸🌸秒杀调控🌸🌸🌸',
+'💎💎💎返回上一页💎💎💎'},
+2018,'💞💞💞作者:Victoria🌸QQ2634833203🌸此区功能你们自己可以修改🌸打开功能有说明💞💞💞')
+if menu1 == 1 then c1() end
+if menu1 == 2 then c2() end
+if menu1 == 3 then c3() end
+if menu1 == 4 then c4() end
+if menu1 == 5 then HOME() end
+GLWW=-1
+end
+
+function D()
+menu1 = gg.multiChoice({
+  '💞💞一键开启辅助💞💞',
+  '💟💟关闭一键辅助💟💟',
+  '💞💞主线专用开启💞💞',
+  '💟💟炫斗之王开启💟💟',
+ '💞💞💞定怪开启💞💞💞',
+ '💟💟💟定怪关闭💟💟💟',
+ '💞💞💞秒杀开启💞💞💞',
+ '💟💟💟秒杀关闭💟💟💟',
+ '💞💞💞无敌开启💞💞💞',
+ '💟💟💟无敌关闭💟💟💟',
+ '💞💞💞无限秘法💞💞💞',
+ '💟💟💟关闭秘法💟💟💟',
+ '💞💞💞全局加速💞💞💞',
+ '💟💟💟关闭加速💟💟💟',
+'💎💎💎返回上一页💎💎💎'},
+nil,'💞💞💞作者:Victoria🌸QQ2634833203🌸副本《一键开启辅助》包含全功能,除了定怪🌸主线与远征开主线专用💞💞💞')
+if menu1 == nil then else
+if menu1[1] == true then A1() end
+if menu1[2] == true then a2() end
+if menu1[3] == true then A3() end
+if menu1[4] == true then a4() end
+if menu1[5] == true then a5() end
+if menu1[6] == true then a6() end
+if menu1[7] == true then a7() end
+if menu1[8] == true then a8() end
+if menu1[9] == true then a9() end
+if menu1[10] == true then a10() end
+if menu1[11] == true then a11() end
+if menu1[12] == true then a12() end
+if menu1[13] == true then a13() end
+if menu1[14] == true then a14() end
+if menu1[15] == true then HOME() end
+end
+GLWW=-1
+end
+
+function a1()
+	 gg.clearResults()
+w="技能范围"
+z="全屏第一步|be285214|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|116214"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=300
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第二步|be2bdafc|10|461c4000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|14eafc"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=60000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第三步|be2c2338|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|153338"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=600
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+   a16()
+   a18()
+   a20()
+   a22()
+gg.toast("副本辅助开启")
+end
+
+function A1()
+	 gg.clearResults()
+w="技能范围"
+z="全屏第一步|be285214|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|116214"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=300
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第二步|be2bdafc|10|461c4000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|14eafc"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=40000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第三步|be2c2338|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|153338"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=400
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+   a16()
+   a18()
+   a20()
+   a22()
+gg.toast("副本辅助开启")
+end
+
+function a2()
+   a15()
+   a17()
+   a19()
+   a21()
+   a23()
+gg.toast("副本辅助关闭")
+end
+
+function a3()
+	 gg.clearResults()
+w="技能范围"
+z="全屏第一步|be285214|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|116214"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=300
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第二步|be2bdafc|10|461c4000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|14eafc"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=60000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第三步|be2c2338|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|153338"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=600
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="游戏加速"
+z="防御|c0887c00|4|2710|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-vxYm2beXAxjoSf49sqlphg==/lib/arm/libGameApp.so|53ac00"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=4
+t[1].value=1000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+   a16()
+   a20()
+   a22()
+gg.toast("副本辅助开启")
+end
+
+function A3()
+	 gg.clearResults()
+w="技能范围"
+z="全屏第一步|be285214|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|116214"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=300
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第二步|be2bdafc|10|461c4000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|14eafc"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=40000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第三步|be2c2338|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|153338"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=400
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="游戏加速"
+z="防御|c0887c00|4|2710|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-vxYm2beXAxjoSf49sqlphg==/lib/arm/libGameApp.so|53ac00"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=4
+t[1].value=1000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+   a16()
+   a20()
+   a22()
+gg.toast("副本辅助开启")
+end
+
+function a4()
+   a2()
+   a22()
+	 gg.clearResults()
+w="游戏加速"
+z="防御|c0887c00|4|2710|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-vxYm2beXAxjoSf49sqlphg==/lib/arm/libGameApp.so|53ac00"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=4
+t[1].value=1000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+gg.toast("炫斗之王开启")
+end
+
+function a5()
+	 gg.clearResults()
+w="技能范围"
+z="定怪|dc224acc|10|3df00000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-1/lib/arm/libGameApp.so|44aacc"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=5
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+gg.toast("定怪开启")
+end
+
+function a6()
+	 gg.clearResults()
+w="技能范围"
+z="定怪|dc224acc|10|3df00000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-1/lib/arm/libGameApp.so|44aacc"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=0.1171875
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+gg.toast("定怪关闭")
+end
+
+function a7()
+   a16()
+gg.toast("秒杀开启")
+end
+
+function a8()
+   a17()
+gg.toast("秒杀关闭")
+end
+
+function a9()
+   a18()
+gg.toast("无敌开启")
+end
+
+function a10()
+   a19()
+gg.toast("无敌关闭")
+end
+
+function a11()
+   a20()
+gg.toast("无限秘法开启")
+end
+
+function a12()
+   a21()
+gg.toast("无限秘法关闭")
+end
+
+function a13()
+   a22()
+gg.toast("全局加速开启")
+end
+
+function a14()
+   a23()
+gg.toast("全局加速关闭")
+end
+
+function a15()
+	 gg.clearResults()
+w="技能范围"
+z="全屏第一步|be285214|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|116214"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=100
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第二步|be2bdafc|10|461c4000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|14eafc"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=10000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第三步|be2c2338|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|153338"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=100
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+end
+
+function a16()
+	 gg.clearResults()
+w="游戏加速"
+z="血量|dd5402c8|10|42c80000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-1/lib/arm/libGameApp.so|1df2c8"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=0.001
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+end
+
+function a17()
+	 gg.clearResults()
+w="游戏加速"
+z="血量|dd5402c8|10|42c80000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-1/lib/arm/libGameApp.so|1df2c8"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=100
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+end
+
+function a18()
+	 gg.clearResults()
+w="游戏加速"
+z="防御|c0887c00|4|2710|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-vxYm2beXAxjoSf49sqlphg==/lib/arm/libGameApp.so|53ac00"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=4
+t[1].value=-99999
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+end
+
+function a19()
+	 gg.clearResults()
+w="游戏加速"
+z="防御|c0887c00|4|2710|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-vxYm2beXAxjoSf49sqlphg==/lib/arm/libGameApp.so|53ac00"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=4
+t[1].value=10000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+end
+
+function a20()
+	 gg.clearResults()
+w="游戏加速"
+z="秘法|be327624|10|461c3c00|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|1b8624"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=9999
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+end
+
+function a21()
+	 gg.clearResults()
+w="游戏加速"
+z="秘法|be327624|10|461c3c00|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|1b8624"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=100
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+end
+
+function a22()
+	 gg.clearResults()
+w="游戏加速"
+z="无限翅膀/全局加速|dd8f1c80|40|408f400000000000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-1/lib/arm/libGameApp.so|590c80"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=64
+t[1].value=300
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+end
+
+function a23()
+	 gg.clearResults()
+w="游戏加速"
+z="无限翅膀/全局加速|dd8f1c80|40|408f400000000000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-1/lib/arm/libGameApp.so|590c80"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=64
+t[1].value=1000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+end
+
+function a24()
+	 gg.clearResults()
+w="技能范围"
+z="定位|b7068844|10|3f800000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-yqb4Med2j_uH1ykvu0MKTw==/lib/arm/libGameApp.so|159844"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=1
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+end
+
+function a25()
+	 gg.clearResults()
+w="技能范围"
+z="定位|b7068844|10|3f800000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-yqb4Med2j_uH1ykvu0MKTw==/lib/arm/libGameApp.so|159844"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=100
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+end
+
+function a26()
+	 gg.clearResults()
+w="游戏加速"
+z="防御|c0887c00|4|2710|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-vxYm2beXAxjoSf49sqlphg==/lib/arm/libGameApp.so|53ac00"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=4
+t[1].value=20000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+end
+
+function b1()
+	 a2()
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第二步|be2bdafc|10|461c4000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|14eafc"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=8000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第三步|be2c2338|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|153338"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=80
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="游戏加速"
+z="秘法|be327624|10|461c3c00|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|1b8624"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=140
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+   a24()
+   a26()
+gg.toast("竞技辅助a开启")
+end
+
+function b2()
+	 a2()
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第二步|be2bdafc|10|461c4000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|14eafc"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=7000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第三步|be2c2338|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|153338"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=70
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="游戏加速"
+z="无线秘法|d40194d4|10|42c80000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-1/lib/arm/libGameApp.so|13b54d4"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=140
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+   a24()
+   a26()
+gg.toast("竞技辅助b开启")
+end
+
+function b3()
+	 a2()
+	 gg.clearResults()
+w="游戏加速"
+z="秘法|be327624|10|461c3c00|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|1b8624"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=140
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+   a24()
+   a26()
+gg.toast("竞技辅助c开启")
+end
+
+function b4()
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第二步|be2bdafc|10|461c4000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|14eafc"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=10000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第三步|be2c2338|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|153338"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=100
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="游戏加速"
+z="秘法|be327624|10|461c3c00|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|1b8624"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=100
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+   a25()
+   a19()
+gg.toast("竞技辅助关闭")
+end
+
+function b5()
+	 gg.clearResults()
+w="游戏加速"
+z="防御|c0887c00|4|2710|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-vxYm2beXAxjoSf49sqlphg==/lib/arm/libGameApp.so|53ac00"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=4
+t[1].value=10000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+gg.toast("防御恢复")
+end
+
+function b6()
+   a24()
+gg.toast("定位开启")
+end
+
+function b7()
+   a25()
+gg.toast("定位关闭")
+end
+
+function b8()
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第二步|be2bdafc|10|461c4000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|14eafc"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=-10000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)	 
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第三步|be2c2338|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|153338"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=-100
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+gg.toast("无视开启")
+end
+
+function b9()
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第二步|be2bdafc|10|461c4000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|14eafc"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=10000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="无视技能2"
+z="全屏第三步|be2c2338|10|42c80000|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|153338"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=100
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+gg.toast("无视关闭")
+end
+
+function b10()
+	 gg.clearResults()
+w="游戏加速"
+z="血量|dd5402c8|10|42c80000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-1/lib/arm/libGameApp.so|1df2c8"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=99999999
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+gg.toast("竞技无敌开启")
+end
+
+function b11()
+   a17()
+gg.toast("竞技无敌关闭")
+end
+
+function b12()
+	 gg.clearResults()
+w="游戏加速"
+z="无限翅膀/全局加速|dd8f1c80|40|408f400000000000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-1/lib/arm/libGameApp.so|590c80"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=64
+t[1].value=0.0001
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+	 gg.clearResults()
+w="游戏加速"
+z="血量|dd5402c8|10|42c80000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-1/lib/arm/libGameApp.so|1df2c8"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=99999999
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+gg.toast("以挂治挂开启")
+end
+
+function b13()
+	 gg.clearResults()
+w="游戏加速"
+z="无限翅膀/全局加速|dd8f1c80|40|408f400000000000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-1/lib/arm/libGameApp.so|590c80"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=64
+t[1].value=1000
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+   a17()
+gg.toast("以挂治挂关闭")
+end
+
+function c1()
+	 gg.clearResults()
+a = gg.prompt({i='恢复改1000改小则加速:'}, {i='400'})
+w="游戏加速"
+z="无限翅膀/全局加速|dd8f1c80|40|408f400000000000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-1/lib/arm/libGameApp.so|590c80"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=64
+t[1].value=a["i"]
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+gg.toast("加速开启")
+end
+
+function c2()
+	 gg.clearResults()
+a = gg.prompt({i='恢复改10000改大增加防御:'}, {i='30000'})
+w="游戏加速"
+z="防御|c0887c00|4|2710|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-vxYm2beXAxjoSf49sqlphg==/lib/arm/libGameApp.so|53ac00"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=4
+t[1].value=a["i"]
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+gg.toast("防御开启")
+end
+
+function c3()
+	 gg.clearResults()
+a = gg.prompt({i='恢复改100改大可以加快秘法恢复速度，修改9999为无限秘法！根据自身需求修改:'}, {i='160'})
+w="游戏加速"
+z="秘法|be327624|10|461c3c00|0|0|0|0|r-xp|/data/data/com.Bc/virtual/data/app/com.tencent.game.VXDGame/lib/libGameApp.so|1b8624"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=a["i"]
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+gg.toast("增强秘法开启")
+end
+
+function c4()
+	 gg.clearResults()
+a = gg.prompt({i='恢复改100改小秒杀，天赋改5-10:'}, {i='5'})
+w="游戏加速"
+z="血量|dd5402c8|10|42c80000|0|0|0|0|r-xp|/data/app/com.tencent.game.VXDGame-1/lib/arm/libGameApp.so|1df2c8"
+pa="/sdcard/Victoria"
+file=io.open(pa,"w")
+file:write(""..w.."\n"..z.."")
+file:close()
+gg.loadList(pa)
+b=gg.getListItems()
+t={}
+t[1]={}
+t[1].address=b[1].address
+t[1].flags=16
+t[1].value=a["i"]
+gg.setValues(t)
+gg.removeListItems(b)
+os.remove(pa)
+gg.toast("秒杀自定义值开启")
+end
+
+function Exit()
+print("作者：Victoria，QQ2634833203")
+os.exit()
+end
+
+function HOME()
+lw=1
+Main()
+end
+
+cs = '作者：Victoria，QQ2634833203'
+while(true)do
+if gg.isVisible(true) then
+XGCK=1
+gg.setVisible(false)
+end
+gg.clearResults()
+if XGCK==1 then
+Main()
+end
+end
+
+
+
+
+            end
+        end
+
+    end
+    if km_key == nil then
+    else
+        if km_key ~= "" then if e == true then KM_LL(km_key) end end
+    end
+    hak = gg.prompt({"输入卡密\n输入1解绑卡密" .. "\n公告:" .. notice .. "\n脚本启动次数：" ..
+        number_of, "是否自动登入", "备用线路"}, {km_key, e,false}, {'text', 
+    'checkbox',"checkbox"}) 
+    if hak == nil then
+    elseif hak[2] == true then
+        io.open(AMI_YDO .. '/e'.. xxxxxxx_23607 ..'.log', 'w+'):write("2") 
+    elseif hak[2] == false then
+        io.open(AMI_YDO .. '/e'.. xxxxxxx_23607 ..'.log', 'w+'):write("1") 
+    end
+    if hak == nil then
+        gg.setVisible(false)
+        xxxxxxxx = nil
+    elseif hak[1] == "1" then
+        G_B = gg.prompt({"输入要解绑的卡密"}, {}, {"text"})
+        if G_B[1] == "" then
+            gg.alert("空，请填写卡密") 
+        else
+            KM_G = alqd8e26HCPmhgqs(KM_G(G_B[1],imei))
+            gg.alert(KM_G.msg) 
+        end
+    elseif hak[1] == "" then
+        gg.alert("空，请填写卡密") 
+    else
+        KM_LL(hak[1],hak[3])
+    end
+end
+
+while (true) do
+    if gg.isVisible(true) then
+        gg.setVisible(false)
+        atyuxEN0KvvVgzil()
+    else
+        if xxxxxxxx == 999 then
+            gg.setVisible(true)
+        else
+        end
+    end
+end
